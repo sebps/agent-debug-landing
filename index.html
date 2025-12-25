@@ -3,15 +3,23 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>agent-debug | LangGraph Visualizer</title>
+
+        <title>agent-debug | LangGraph Agent Debugger</title>
+
         <script src="https://cdn.tailwindcss.com"></script>
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono&display=swap');
             body { font-family: 'Inter', sans-serif; }
             .mono { font-family: 'JetBrains Mono', monospace; }
             .border-glow { border: 1px solid rgba(59, 130, 246, 0.5); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); }
         </style>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     </head>
     <body class="bg-[#fafafa] text-slate-800">
         <nav class="max-w-5xl mx-auto px-6 py-10 flex justify-between items-center">
@@ -21,16 +29,16 @@
             </div>
             <div class="flex gap-6 text-sm font-medium text-slate-500">
                 <a href="#setup" class="hover:text-slate-900">Setup</a>
-                <a href="https://github.com" class="hover:text-slate-900">GitHub</a>
+                <a href="https://github.com/sebps/agent-debug.git" class="hover:text-slate-900">GitHub</a>
             </div>
         </nav>
 
-        <section class="max-w-5xl mx-auto px-6 text-center mb-20">
+        <section class="max-w-5xl mx-auto px-6 text-center mb-20 mt-20">
             <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-                Debug your LangGraph agent <span class="text-blue-600">in no time.</span>
+                Debug your <span class="text-blue-600">LangGraph</span> agent.
             </h1>
             <p class="text-lg text-slate-500 max-w-xl mx-auto mb-10 leading-relaxed">
-                A tiny, open-source UI to visualize agent execution. Map your graph, stream nodes via SSE, and see exactly where your logic breaks.
+                A tiny, open-source lib to interact with your langgraph agent and visualize its execution.
             </p>
             
             <div class="inline-flex items-center gap-3 bg-white border border-slate-200 rounded-full px-5 py-2 shadow-sm">
@@ -41,54 +49,37 @@
         </section>
 
         <section class="max-w-6xl mx-auto px-6 mb-24">
-            <div class="bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden flex flex-col md:flex-row h-[520px]">
-                <div class="flex-1 bg-slate-50 border-r border-slate-100 relative p-8">
-                    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;"></div>
-                    <div class="relative flex flex-col items-center gap-12 pt-12">
-                        <div class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] mono uppercase text-slate-400">START</div>
-                        <div class="px-6 py-4 bg-white border-2 border-blue-600 rounded-lg shadow-sm text-sm font-bold flex items-center gap-3">
-                            <div class="w-2 h-2 bg-blue-600 rounded-full animate-ping"></div>
-                            validate_query
-                        </div>
-                        <div class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] mono uppercase text-slate-400">END</div>
-                    </div>
-                </div>
-                <div class="w-full md:w-80 lg:w-96 flex flex-col">
-                    <div class="p-4 border-b border-slate-100 bg-white flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-slate-400 mono uppercase tracking-widest">Live Trace</span>
-                        <span class="text-[10px] text-blue-600 mono font-bold bg-blue-50 px-2 py-0.5 rounded">validate_query</span>
-                    </div>
-                    <div class="flex-1 p-6 space-y-4 overflow-hidden bg-white">
-                        <div class="bg-slate-100 p-3 rounded-lg rounded-tl-none text-xs text-slate-600 leading-relaxed">
-                            Received input: "Verify Dockerfile config"
-                        </div>
-                        <div class="bg-slate-50 border border-slate-100 p-3 rounded-lg rounded-tl-none text-xs text-slate-500 italic">
-                            Node [validate_query] is processing...
-                        </div>
-                    </div>
-                    <div class="p-4 border-t border-slate-100">
-                        <div class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-xs text-slate-400">Waiting for agent...</div>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden flex flex-col md:flex-row h-[520px]" style="overscroll-behavior: contain; overflow: auto;">
+                <iframe src="https://agent-debug-test.onrender.com" class="flex-1 border-0"></iframe>
             </div>
         </section>
 
-        <section id="setup" class="max-w-3xl mx-auto px-6 pb-32">
-            <h3 class="text-xl font-bold mb-6">Quick Start</h3>
-            <div class="prose prose-slate max-w-none text-sm text-slate-600 leading-7">
-                <p class="mb-4">1. Expose your LangGraph instance via our helper in your <code class="bg-slate-100 px-1 rounded">server.js</code>:</p>
-                <pre class="bg-slate-900 text-slate-300 p-4 rounded-lg mono text-[13px] overflow-x-auto mb-6">
-    app.get('/graph', async (req, res) => {
-    const structure = await graph.getGraphAsync();
-    res.json(structure);
-    });</pre>
-                <p class="mb-4">2. Launch the debugger UI and point it to your local port:</p>
-                <pre class="bg-slate-900 text-slate-300 p-4 rounded-lg mono text-[13px] mb-6">VITE_AGENT_URL=http://localhost:3000 npm start</pre>
-            </div>
-        </section>
+<section id="setup" class="max-w-3xl mx-auto px-6 pb-32">
+    <h3 class="text-xl font-bold mb-6">Quick Start</h3>
+    <div class="prose prose-slate max-w-none text-sm text-slate-600 leading-7">
+        <p class="mb-4">Install agent-debug package via npm:</p>
+        <pre class="bg-slate-900 p-4 rounded-lg overflow-x-auto mb-6"><code class="language-bash text-[13px] leading-relaxed">npm install agent-debug</code></pre>
+        <p class="mb-4">Install langgraph package via npm:</p>
+        <pre class="bg-slate-900 p-4 rounded-lg overflow-x-auto mb-6"><code class="language-bash text-[13px] leading-relaxed">npm install @langchain/langgraph</code></pre>
+
+        <p class="mb-4">Expose your LangGraph instance for debugging purposes:</p>
+        <pre class="bg-slate-900 p-4 rounded-lg overflow-x-auto mb-6"><code class="language-javascript text-[13px] leading-relaxed">import { debug } from 'agent-debug';
+import { StateGraph, START, END, MessagesAnnotation } from "@langchain/langgraph";
+
+const workflow = new StateGraph(MessagesAnnotation)
+  .addNode("agent", agentNode)
+  .addEdge(START, "agent")
+  .addEdge("agent", END);
+
+const agent = workflow.compile();
+
+// spinup server and open agent-debug interface
+debug(agent, 3001)</code></pre>
+    </div>
+</section>
 
         <footer class="text-center py-10 border-t border-slate-100 text-slate-400 text-xs">
-            <p>A minimalist tool for the LangGraph community. No tracking. Just debugging.</p>
+            <p>A minimalist tool for the LangGraph community to debug langgraph agents.</p>
         </footer>
     </body>
 </html>
